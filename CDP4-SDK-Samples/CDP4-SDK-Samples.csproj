@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Company>RHEA System S.A.</Company>
+    <Description>CDP4-SDK Samples</Description>
+    <Copyright>Copyright © RHEA System S.A.</Copyright>
+    <RepositoryUrl>https://github.com/RHEAGROUP/CDP4-SDK-Community-Edition-Samples.git</RepositoryUrl>
+  </PropertyGroup>
+
+</Project>
