@@ -4,7 +4,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CDP4.SDK.Samples
+namespace CDP4.SDK.GraphViz
 {
     using System;
 
