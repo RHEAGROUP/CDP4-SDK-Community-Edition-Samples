@@ -11,7 +11,7 @@ namespace CDP4.SDK.Samples
         static void Main(string[] args)
         {
             var app = new SimpleConsoleApp();
-            app.run();
+            app.Run();
         }
     }
 }

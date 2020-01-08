@@ -44,7 +44,7 @@ namespace CDP4.SDK.Samples
         private const string postPfslReorder = "post_pfsl_reorder";
         private const string removeParameterFromElementDefinition = "remove_parameter";
 
-        public void run()
+        public void Run()
         {
             // Setup NLog
             var config = new LoggingConfiguration();
