@@ -9,4 +9,8 @@
     <RepositoryUrl>https://github.com/RHEAGROUP/CDP4-SDK-Community-Edition-Samples.git</RepositoryUrl>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CDP4ServicesDal-CE" Version="5.0.6" />
+  </ItemGroup>
+
 </Project>
