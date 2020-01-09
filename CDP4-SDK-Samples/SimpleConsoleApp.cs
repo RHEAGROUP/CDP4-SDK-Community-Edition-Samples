@@ -12,7 +12,6 @@ namespace CDP4.SDK.Samples
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
-    using System.Threading.Tasks;
     using CDP4Common.EngineeringModelData;
     using CDP4Common.SiteDirectoryData;
     using CDP4Common.Types;
@@ -26,24 +25,42 @@ namespace CDP4.SDK.Samples
 
     public class SimpleConsoleApp
     {
-        private ISession session;
+        // Commands
+        private const string OpenConnection = "open";
+        private const string RefreshData = "refresh";
+        private const string ReloadData = "reload";
+        private const string CloseConnection = "close";
+        private const string RestoreServer = "restore";
+        private const string OpenIteration = "get_iteration";
+        private const string PostPredifinedPerson = "post_person";
+        private const string PostPredifinedParameter = "post_parameter";
+        private const string PostPfsl = "post_pfsl";
+        private const string PostPfslReorder = "post_pfsl_reorder";
+        private const string RemoveParameterFromElementDefinition = "remove_parameter";
+
+        /// <summary>
+        /// The <see cref="Credentials"/> that are used to connect the data-store
+        /// </summary>
         private Credentials credentials;
+
+        /// <summary>
+        /// A flag signalling whether this app is still running
+        /// </summary>
         private bool isRunning = true;
+
+        /// <summary>
+        /// The <see cref="ISession"/> that is used to communicate with the data-store
+        /// </summary>
+        private ISession session;
+
+        /// <summary>
+        /// The <see cref="Uri"/> of the data-store to connect to
+        /// </summary>
         private Uri uri;
 
-        // Commands
-        private const string openConnection = "open";
-        private const string refreshData = "refresh";
-        private const string reloadData = "reload";
-        private const string closeConnection = "close";
-        private const string restoreServer = "restore";
-        private const string openIteration = "get_iteration";
-        private const string postPredifinedPerson = "post_person";
-        private const string postPredifinedParameter = "post_parameter";
-        private const string postPfsl = "post_pfsl";
-        private const string postPfslReorder = "post_pfsl_reorder";
-        private const string removeParameterFromElementDefinition = "remove_parameter";
-
+        /// <summary>
+        /// Runs this console app
+        /// </summary>
         public void Run()
         {
             // Setup NLog
@@ -58,102 +75,104 @@ namespace CDP4.SDK.Samples
             // Apply config           
             LogManager.Configuration = config;
 
-            printSeparator();
+            this.PrintSeparator();
             Console.WriteLine("Welcome to CDP4 SDK sample app!");
-            printSeparator();
+            this.PrintSeparator();
 
             Console.WriteLine("Enter your user name (default is admin, just press Enter):");
-            var userName = String.IsNullOrWhiteSpace(Console.ReadLine()) ? "admin" : Console.ReadLine();
+            var userName = string.IsNullOrWhiteSpace(Console.ReadLine()) ? "admin" : Console.ReadLine();
 
             Console.WriteLine("Enter your password (to use default just press Enter):");
-            var pass = String.IsNullOrWhiteSpace(Console.ReadLine()) ? "pass" : Console.ReadLine();
+            var pass = string.IsNullOrWhiteSpace(Console.ReadLine()) ? "pass" : Console.ReadLine();
 
             Console.WriteLine(
                 "Enter a server's URL for future requests (default is https://cdp4services-test.rheagroup.com, just press Enter):");
-            uri = new Uri(String.IsNullOrWhiteSpace(Console.ReadLine())
+            this.uri = new Uri(string.IsNullOrWhiteSpace(Console.ReadLine())
                 ? "https://cdp4services-test.rheagroup.com"
                 : Console.ReadLine());
 
             var dal = new CdpServicesDal();
-            credentials = new Credentials(userName, pass, uri, null);
-            session = new Session(dal, credentials);
+            this.credentials = new Credentials(userName, pass, this.uri);
+            this.session = new Session(dal, this.credentials);
 
-            printCommands();
+            this.PrintCommands();
 
-            while (isRunning)
-            {
+            while (this.isRunning)
                 try
                 {
-                    executeCommand(Console.ReadLine());
+                    this.ExecuteCommand(Console.ReadLine());
                 }
                 catch (Exception ex)
                 {
-                    printSeparator();
+                    this.PrintSeparator();
                     Console.WriteLine("Something went wrong. Sorry about that.");
                     Console.WriteLine(ex.Message);
-                    printSeparator();
+                    this.PrintSeparator();
                 }
-            }
         }
 
-        private void executeCommand(string command)
+        /// <summary>
+        /// Executes a supplied command
+        /// <param name="command">Name of a command to execute</param>
+        /// </summary>
+        private void ExecuteCommand(string command)
         {
             var args = command.Trim().Split(" ");
             switch (args[0])
             {
-                case openConnection:
+                case OpenConnection:
                 {
-                    open();
+                    this.Open();
                     break;
                 }
-                case refreshData:
+                case RefreshData:
                 {
-                    refresh();
+                    this.Refresh();
                     break;
                 }
-                case reloadData:
+                case ReloadData:
                 {
-                    reload();
+                    this.Reload();
                     break;
                 }
-                case openIteration:
+                case OpenIteration:
                 {
-                    getIteration();
+                    this.GetIteration();
                     break;
                 }
-                case postPredifinedPerson:
+                case PostPredifinedPerson:
                 {
-                    postPerson();
+                    this.PostPerson();
                     break;
                 }
-                case postPredifinedParameter:
+                case PostPredifinedParameter:
                 {
-                    postParameter();
+                    this.PostParameter();
                     break;
                 }
-                case postPfsl:
+                case PostPfsl:
                 {
-                    postPossibleFiniteStateList();
+                    this.PostPossibleFiniteStateList();
                     break;
                 }
-                case postPfslReorder:
+                case PostPfslReorder:
                 {
-                    postPossibleFiniteStateListReorder();
+                    this.PostPossibleFiniteStateListReorder();
                     break;
                 }
-                case removeParameterFromElementDefinition:
+                case RemoveParameterFromElementDefinition:
                 {
-                    removeParameter();
+                    this.RemoveParameter();
                     break;
                 }
-                case closeConnection:
+                case CloseConnection:
                 {
-                    close();
+                    this.Close();
                     break;
                 }
-                case restoreServer:
+                case RestoreServer:
                 {
-                    restore();
+                    this.Restore();
                     break;
                 }
                 default:
@@ -164,15 +183,18 @@ namespace CDP4.SDK.Samples
             }
         }
 
-        private async Task postPossibleFiniteStateListReorder()
+        /// <summary>
+        /// Posts a reorder of elements in <see cref="PossibleFiniteStateList"/>
+        /// </summary>
+        private void PostPossibleFiniteStateListReorder()
         {
-            if (session.OpenIterations.Count == 0)
+            if (this.session.OpenIterations.Count == 0)
             {
                 Console.WriteLine("At first an iteration should be opened");
                 return;
             }
 
-            var iteration = session.OpenIterations.Keys.First();
+            var iteration = this.session.OpenIterations.Keys.First();
             if (iteration != null)
             {
                 var iterationClone = iteration.Clone(false);
@@ -194,7 +216,7 @@ namespace CDP4.SDK.Samples
                 pfslClone.PossibleState.SortedItems.Values.ToList().ForEach(x =>
                 {
                     itemsMap.TryGetValue(x.Iid, out var value);
-                    var orderedItem = new OrderedItem() {K = value, V = x};
+                    var orderedItem = new OrderedItem {K = value, V = x};
                     orderedItems.Add(orderedItem);
                 });
 
@@ -208,36 +230,39 @@ namespace CDP4.SDK.Samples
                     iterationClone);
                 transaction.CreateOrUpdate(pfslClone);
 
-                await session.Write(transaction.FinalizeTransaction());
+                this.session.Write(transaction.FinalizeTransaction()).GetAwaiter().GetResult();
 
-                printCacheCount();
+                this.PrintCacheCount();
 
-                printCommands();
+                this.PrintCommands();
             }
         }
 
-        private async Task postPossibleFiniteStateList()
+        /// <summary>
+        /// Posts a predefined <see cref="PossibleFiniteStateList"/>
+        /// </summary>
+        private void PostPossibleFiniteStateList()
         {
-            if (session.OpenIterations.Count == 0)
+            if (this.session.OpenIterations.Count == 0)
             {
                 Console.WriteLine("At first an iteration should be opened");
                 return;
             }
 
-            var iteration = session.OpenIterations.Keys.First();
+            var iteration = this.session.OpenIterations.Keys.First();
             if (iteration != null)
             {
                 var iterationClone = iteration.Clone(false);
-                var pfs1 = new PossibleFiniteState(Guid.NewGuid(), session.Assembler.Cache, uri)
+                var pfs1 = new PossibleFiniteState(Guid.NewGuid(), this.session.Assembler.Cache, this.uri)
                     {Name = "state1", ShortName = "s1"};
 
-                var pfs2 = new PossibleFiniteState(Guid.NewGuid(), session.Assembler.Cache, uri)
+                var pfs2 = new PossibleFiniteState(Guid.NewGuid(), this.session.Assembler.Cache, this.uri)
                     {Name = "state2", ShortName = "s2"};
 
-                var pfsList = new PossibleFiniteStateList(Guid.NewGuid(),
-                    session.Assembler.Cache, uri) {Name = "PossibleFiniteStateList1", ShortName = "PFSL1"};
+                var pfsList = new PossibleFiniteStateList(Guid.NewGuid(), this.session.Assembler.Cache, this.uri)
+                    {Name = "PossibleFiniteStateList1", ShortName = "PFSL1"};
 
-                session.OpenIterations.TryGetValue(iteration, out var tuple);
+                this.session.OpenIterations.TryGetValue(iteration, out var tuple);
                 var domainOfExpertise = tuple.Item1;
                 pfsList.Owner = domainOfExpertise;
 
@@ -248,33 +273,36 @@ namespace CDP4.SDK.Samples
                 transaction.Create(pfs1, pfsList);
                 transaction.Create(pfs2, pfsList);
 
-                await session.Write(transaction.FinalizeTransaction());
+                this.session.Write(transaction.FinalizeTransaction()).GetAwaiter().GetResult();
 
-                printCacheCount();
+                this.PrintCacheCount();
 
-                printCommands();
+                this.PrintCommands();
             }
         }
 
-        private async Task postParameter()
+        /// <summary>
+        /// Posts a predefined <see cref="Parameter"/>
+        /// </summary>
+        private void PostParameter()
         {
-            if (session.OpenIterations.Count == 0)
+            if (this.session.OpenIterations.Count == 0)
             {
                 Console.WriteLine("At first an iteration should be opened");
                 return;
             }
 
-            var iteration = session.OpenIterations.Keys.First();
+            var iteration = this.session.OpenIterations.Keys.First();
             if (iteration != null)
             {
                 var elementDefinition = iteration.Element[0];
                 var elementDefinitionClone = elementDefinition.Clone(false);
-                session.OpenIterations.TryGetValue(iteration, out var tuple);
+                this.session.OpenIterations.TryGetValue(iteration, out var tuple);
                 var domainOfExpertise = tuple.Item1;
 
-                var parameter = new Parameter(Guid.NewGuid(), session.Assembler.Cache, uri);
-                parameter.ParameterType =
-                    session.Assembler.Cache.Values.Select(x => x.Value).OfType<ParameterType>().First();
+                var parameter = new Parameter(Guid.NewGuid(), this.session.Assembler.Cache, this.uri);
+                parameter.ParameterType = this.session.Assembler.Cache.Values.Select(x => x.Value)
+                    .OfType<ParameterType>().First();
                 parameter.Owner = domainOfExpertise;
 
                 var transaction = new ThingTransaction(
@@ -282,58 +310,73 @@ namespace CDP4.SDK.Samples
                     elementDefinitionClone);
                 transaction.Create(parameter, elementDefinitionClone);
 
-                await session.Write(transaction.FinalizeTransaction());
+                this.session.Write(transaction.FinalizeTransaction()).GetAwaiter().GetResult();
 
-                printCacheCount();
+                this.PrintCacheCount();
 
-                printCommands();
+                this.PrintCommands();
             }
         }
 
-        private void printSeparator()
+        /// <summary>
+        /// Prints a text separator to the console
+        /// </summary>
+        private void PrintSeparator()
         {
             Console.WriteLine("*********************************");
         }
 
-        private async Task open()
+        /// <summary>
+        /// Opens a connection to a data-source specified by <see cref="uri"/>
+        /// </summary>
+        private void Open()
         {
-            await session.Open();
-            printCacheCount();
+            this.session.Open().GetAwaiter().GetResult();
+            this.PrintCacheCount();
 
-            printCommands();
+            this.PrintCommands();
         }
 
-        private async Task refresh()
+        /// <summary>
+        /// Refreshes data to be in sync with the data-source
+        /// </summary>
+        private void Refresh()
         {
-            if (isSiteDirectoryUnavailable())
+            if (this.IsSiteDirectoryUnavailable())
             {
                 Console.WriteLine("At first a connection should be opened.");
                 return;
             }
 
-            await session.Refresh();
-            printCacheCount();
+            this.session.Refresh().GetAwaiter().GetResult();
+            this.PrintCacheCount();
 
-            printCommands();
+            this.PrintCommands();
         }
 
-        private async Task reload()
+        /// <summary>
+        /// Reloads data from the data-source
+        /// </summary>
+        private void Reload()
         {
-            if (isSiteDirectoryUnavailable())
+            if (this.IsSiteDirectoryUnavailable())
             {
                 Console.WriteLine("At first a connection should be opened.");
                 return;
             }
 
-            await session.Reload();
-            printCacheCount();
+            this.session.Reload().GetAwaiter().GetResult();
+            this.PrintCacheCount();
 
-            printCommands();
+            this.PrintCommands();
         }
 
-        private async Task close()
+        /// <summary>
+        /// Closes connection to the data-source and end the execution of this app
+        /// </summary>
+        private void Close()
         {
-            if (isSiteDirectoryUnavailable())
+            if (this.IsSiteDirectoryUnavailable())
             {
                 Console.WriteLine("At first a connection should be opened.");
                 return;
@@ -341,7 +384,7 @@ namespace CDP4.SDK.Samples
 
             try
             {
-                await session.Close();
+                this.session.Close().GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
@@ -349,43 +392,49 @@ namespace CDP4.SDK.Samples
                 Console.WriteLine(ex.Message);
             }
 
-            printSeparator();
+            this.PrintSeparator();
             Console.WriteLine("Good bye!");
-            printSeparator();
-            isRunning = false;
+            this.PrintSeparator();
+            this.isRunning = false;
         }
 
-        private void restore()
+        /// <summary>
+        /// Restores data on the data-source
+        /// </summary>
+        private void Restore()
         {
-            if (!isSiteDirectoryUnavailable())
+            if (!this.IsSiteDirectoryUnavailable())
             {
                 Console.WriteLine("It is possible to restore the server only before connection is opened.");
                 return;
             }
 
-            var uriBuilder = new UriBuilder(uri);
+            var uriBuilder = new UriBuilder(this.uri);
             uriBuilder.Path = "/Data/Restore";
 
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
-                Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", credentials.UserName,
-                    credentials.Password))));
+                Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Format("{0}:{1}", this.credentials.UserName,
+                    this.credentials.Password))));
 
             client.PostAsync(uriBuilder.Uri, null);
             client.Dispose();
 
-            printCommands();
+            this.PrintCommands();
         }
 
-        private async Task removeParameter()
+        /// <summary>
+        /// Removes the first found <see cref="Parameter"/> from the first found <see cref="ElementDefinition"/>
+        /// </summary>
+        private void RemoveParameter()
         {
-            if (session.OpenIterations.Count == 0)
+            if (this.session.OpenIterations.Count == 0)
             {
                 Console.WriteLine("At first an iteration should be opened");
                 return;
             }
 
-            var iteration = session.OpenIterations.Keys.First();
+            var iteration = this.session.OpenIterations.Keys.First();
             if (iteration != null)
             {
                 var elementDefinition = iteration.Element[0];
@@ -397,18 +446,21 @@ namespace CDP4.SDK.Samples
                     elementDefinitionClone);
                 transaction.Delete(parameterClone, elementDefinitionClone);
 
-                await session.Write(transaction.FinalizeTransaction());
+                this.session.Write(transaction.FinalizeTransaction()).GetAwaiter().GetResult();
 
-                printCacheCount();
+                this.PrintCacheCount();
 
-                printCommands();
+                this.PrintCommands();
             }
         }
 
-        private async Task getIteration()
+        /// <summary>
+        /// Retrieves <see cref="Iteration"/> related data of the first found <see cref="Iteration"/>
+        /// </summary>
+        private void GetIteration()
         {
-            var siteDirectory = session.Assembler.RetrieveSiteDirectory();
-            if (isSiteDirectoryUnavailable())
+            var siteDirectory = this.session.Assembler.RetrieveSiteDirectory();
+            if (this.IsSiteDirectoryUnavailable())
             {
                 Console.WriteLine("At first a connection should be opened.");
                 return;
@@ -418,42 +470,44 @@ namespace CDP4.SDK.Samples
             var iterationIid = siteDirectory.Model[0].IterationSetup[0].IterationIid;
             var domainOfExpertiseIid = siteDirectory.Model[0].ActiveDomain[0].Iid;
 
-            var model = new EngineeringModel(engineeringModelIid, session.Assembler.Cache, uri);
-            var iteration = new Iteration(iterationIid, session.Assembler.Cache, uri);
+            var model = new EngineeringModel(engineeringModelIid, this.session.Assembler.Cache, this.uri);
+            var iteration = new Iteration(iterationIid, this.session.Assembler.Cache, this.uri);
             iteration.Container = model;
-            var domainOfExpertise = new DomainOfExpertise(domainOfExpertiseIid,
-                session.Assembler.Cache, uri);
+            var domainOfExpertise = new DomainOfExpertise(domainOfExpertiseIid, this.session.Assembler.Cache, this.uri);
 
-            await session.Read(iteration, domainOfExpertise);
+            this.session.Read(iteration, domainOfExpertise).GetAwaiter().GetResult();
 
-            printCacheCount();
+            this.PrintCacheCount();
 
-            printCommands();
+            this.PrintCommands();
         }
 
-        private async Task postPerson()
+        /// <summary>
+        /// Posts a predefined <see cref="Person"/>
+        /// </summary>
+        private void PostPerson()
         {
-            if (isSiteDirectoryUnavailable())
+            if (this.IsSiteDirectoryUnavailable())
             {
                 Console.WriteLine("At first a connection should be opened.");
                 return;
             }
 
             // Create person object
-            var person = new Person(Guid.NewGuid(), session.Assembler.Cache, uri)
+            var person = new Person(Guid.NewGuid(), this.session.Assembler.Cache, this.uri)
             {
                 IsActive = true, ShortName = "M" + DateTime.Now, Surname = "Mouse", GivenName = "Mike",
                 Password = "password"
             };
-            var email1 = new EmailAddress(Guid.NewGuid(), session.Assembler.Cache, uri)
+            var email1 = new EmailAddress(Guid.NewGuid(), this.session.Assembler.Cache, this.uri)
                 {Value = "mikki.home@mouse.com", VcardType = VcardEmailAddressKind.HOME};
 
             person.DefaultEmailAddress = email1;
 
-            var email2 = new EmailAddress(Guid.NewGuid(), session.Assembler.Cache, uri)
+            var email2 = new EmailAddress(Guid.NewGuid(), this.session.Assembler.Cache, this.uri)
                 {Value = "mikki.work@mouse.com", VcardType = VcardEmailAddressKind.WORK};
 
-            var modifiedSiteDirectory = session.Assembler.RetrieveSiteDirectory().Clone(true);
+            var modifiedSiteDirectory = this.session.Assembler.RetrieveSiteDirectory().Clone(true);
 
             var transaction = new ThingTransaction(
                 TransactionContextResolver.ResolveContext(modifiedSiteDirectory), modifiedSiteDirectory);
@@ -461,47 +515,56 @@ namespace CDP4.SDK.Samples
             transaction.Create(email1, person);
             transaction.Create(email2, person);
 
-            await session.Write(transaction.FinalizeTransaction());
+            this.session.Write(transaction.FinalizeTransaction()).GetAwaiter().GetResult();
 
-            printCacheCount();
+            this.PrintCacheCount();
 
-            printCommands();
+            this.PrintCommands();
         }
 
-        private void printCacheCount()
+        /// <summary>
+        /// Prints current amount of objects in the cache
+        /// </summary>
+        private void PrintCacheCount()
         {
-            Console.WriteLine(session.Assembler.Cache.Count + " objects currently in the cache.");
+            Console.WriteLine(this.session.Assembler.Cache.Count + " objects currently in the cache.");
         }
 
-        private void printCommands()
+        /// <summary>
+        /// Prints a list of available commands to the console
+        /// </summary>
+        private void PrintCommands()
         {
-            printSeparator();
+            this.PrintSeparator();
             Console.WriteLine("Available commands:");
-            Console.WriteLine(openConnection + " - Open a connection to a data-source");
-            Console.WriteLine(refreshData + " - Update the Cache with updated Things from a data-source");
-            Console.WriteLine(reloadData + " - Reload all Things from a data-source for all open TopContainers");
+            Console.WriteLine(OpenConnection + " - Open a connection to a data-source");
+            Console.WriteLine(RefreshData + " - Update the Cache with updated Things from a data-source");
+            Console.WriteLine(ReloadData + " - Reload all Things from a data-source for all open TopContainers");
             Console.WriteLine(
-                closeConnection
+                CloseConnection
                 + " - Close the connection to a data-source and clear the Cache and exits the program");
-            Console.WriteLine(restoreServer + " - Restores the state of a data-source to its default state");
+            Console.WriteLine(RestoreServer + " - Restores the state of a data-source to its default state");
             Console.WriteLine(
-                openIteration
+                OpenIteration
                 + " - gets a predefined iteration of an engineering model with dependent objects");
-            Console.WriteLine(postPredifinedPerson + " - posts a predefined person with 2 e-mail addresses");
-            Console.WriteLine(postPredifinedParameter + " - posts a predefined parameter");
+            Console.WriteLine(PostPredifinedPerson + " - posts a predefined person with 2 e-mail addresses");
+            Console.WriteLine(PostPredifinedParameter + " - posts a predefined parameter");
             Console.WriteLine(
-                postPfsl + " - posts a predefined PossibleFiniteStateList with 2 PossibleFiniteStates");
+                PostPfsl + " - posts a predefined PossibleFiniteStateList with 2 PossibleFiniteStates");
             Console.WriteLine(
-                postPfslReorder
+                PostPfslReorder
                 + " - reorders(rotates in this particular case) states in the created predefined PossibleFiniteStateList (post_pfsl)");
-            Console.WriteLine(removeParameterFromElementDefinition +
+            Console.WriteLine(RemoveParameterFromElementDefinition +
                               " - removes a predefined Parameter of ElementDefinition");
-            printSeparator();
+            this.PrintSeparator();
         }
 
-        private bool isSiteDirectoryUnavailable()
+        /// <summary>
+        /// Checks whether <see cref="SiteDirectory"/> is unavailable
+        /// </summary>
+        private bool IsSiteDirectoryUnavailable()
         {
-            return session.Assembler.RetrieveSiteDirectory() == null;
+            return this.session.Assembler.RetrieveSiteDirectory() == null;
         }
     }
 }
