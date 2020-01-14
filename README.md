@@ -1,15 +1,29 @@
 <img src="https://github.com/RHEAGROUP/CDP4-SDK-Community-Edition/raw/master/CDP-Community-Edition.png" width="250">
 
-The Concurrent Design Platform Software Development Kit is an C# SDK that that is compliant with ECSS-E-TM-10-25A Annex A and Annex C. The SDK contains multiple libraries that are each packaged as a nuget and avaialble from [nuget.org](https://www.nuget.org/packages?q=cdp4). The SDK is used in the Concurrent Design Platform (CDP4) to create an ECSS-E-TM-10-25A compliant implementation, both for the [Web Services](https://github.com/RHEAGROUP/CDP4-WebServices-Community-Edition), the [Desktop Application](https://github.com/RHEAGROUP/CDP4-IME-Community-Edition) and an experimental [Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/client) based [Web Application](https://github.com/RHEAGROUP/CDP4-Blazor). The following libraries are made avaiable in the Community Edition under the [GNU LGPL](https://www.gnu.org/licenses/lgpl-3.0.en.html):
+The Concurrent Design Platform Software Development Kit is an SDK that is compliant with ECSS-E-TM-10-25A Annex A and Annex C. 
 
-  - CDP4Common 
-  - CDP4JsonSerializer
-  - CDP4Dal
-  - CDP4JsonFileDal
-  - CDP4ServicesDal
-  - CDP4WspDal
+This repository contains an example project that demonstrates how this C# SDK can be used.
+The source code of the SDK can be found [here](https://github.com/RHEAGROUP/CDP4-SDK-Community-Edition).
 
-This repository contains example projects that demonstrate how the SDK can be used
+## CDP4-SDK-Samples
+
+This is a simple console application. The most convenient way to run it is through your favourite IDE.
+There is a short list of predefined commands:
+
+- **open** - Open a connection to a data-source
+- **refresh** - Update the Cache with updated Things from a data-source
+- **reload** - Reload all Things from a data-source for all open TopContainers
+- **close** - Close the connection to a data-source and clear the Cache and exits the program
+- **restore** - Restores the state of a data-source to its default state
+- **get_iteration** - gets a predefined iteration of an engineering model with dependent objects
+- **post_person** - posts a predefined person with 2 e-mail addresses
+- **post_parameter** - posts a predefined parameter
+- **post_pfsl** - posts a predefined PossibleFiniteStateList with 2 PossibleFiniteStates
+- **post_pfsl_reorder** - reorders(rotates in this particular case) states in the created predefined PossibleFiniteStateList (post_pfsl)
+- **remove_parameter** - removes a predefined Parameter of ElementDefinition
+
+You will be prompted with this list after each operation for the convenience. Commands are case sensitive and
+there is no autocompletion functionality.  
 
 ## CDP4-SDK-GraphViz
 
