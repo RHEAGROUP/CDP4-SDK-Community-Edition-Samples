@@ -86,9 +86,9 @@ namespace CDP4.SDK.Samples
             var pass = string.IsNullOrWhiteSpace(Console.ReadLine()) ? "pass" : Console.ReadLine();
 
             Console.WriteLine(
-                "Enter a server's URL for future requests (default is https://cdp4services-test.rheagroup.com, just press Enter):");
+                "Enter a server's URL for future requests (default is https://cdp4services-test.cdp4.org, just press Enter):");
             this.uri = new Uri(string.IsNullOrWhiteSpace(Console.ReadLine())
-                ? "https://cdp4services-test.rheagroup.com"
+                ? "https://cdp4services-test.cdp4.org"
                 : Console.ReadLine());
 
             var dal = new CdpServicesDal();
