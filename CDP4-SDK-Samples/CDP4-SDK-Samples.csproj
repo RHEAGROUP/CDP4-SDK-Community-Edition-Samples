@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CDP4ServicesDal-CE" Version="5.0.6" />
+    <PackageReference Include="CDP4ServicesDal-CE" Version="6.1.0" />
   </ItemGroup>
 
 </Project>
