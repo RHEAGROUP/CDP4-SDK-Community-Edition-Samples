@@ -1,11 +1,13 @@
-<img src="https://github.com/RHEAGROUP/CDP4-SDK-Community-Edition/raw/master/CDP-Community-Edition.png" width="250">
+<img src="https://github.com/RHEAGROUP/COMET-SDK-Community-Edition-Samples/raw/master/COMET.jpg" width="250">
 
-The Concurrent Design Platform Software Development Kit is an SDK that is compliant with ECSS-E-TM-10-25A Annex A and Annex C. 
+> COMET is the new name for what was previously called the CDP4. We are transitioning the applications and software libraries. The code and documentation will still refer to CDP4 in a number of places while we are updating.
+
+The COMET Software Development Kit is an SDK that is compliant with ECSS-E-TM-10-25A Annex A and Annex C. 
 
 This repository contains an example project that demonstrates how this C# SDK can be used.
-The source code of the SDK can be found [here](https://github.com/RHEAGROUP/CDP4-SDK-Community-Edition).
+The source code of the SDK can be found [here](https://github.com/RHEAGROUP/COMET-SDK-Community-Edition).
 
-## CDP4-SDK-Samples
+## COMET-SDK-Samples
 
 This is a simple console application. The most convenient way to run it is through your favourite IDE.
 There is a short list of predefined commands:
@@ -25,6 +27,6 @@ There is a short list of predefined commands:
 You will be prompted with this list after each operation for the convenience. Commands are case sensitive and
 there is no autocompletion functionality.  
 
-## CDP4-SDK-GraphViz
+## COMET-SDK-GraphViz
 
-A .NET Core command line application that demonstrates how to access an online CDP4 Server, select an **Engineering Model** and **Iteration** and generate a **dot** file that can be parsed by [GraphViz](https://graphviz.gitlab.io/) to generate a "graphical" representation of an explicit option tree.
+A .NET Core command line application that demonstrates how to access an online COMET Server, select an **Engineering Model** and **Iteration** and generate a **dot** file that can be parsed by [GraphViz](https://graphviz.gitlab.io/) to generate a "graphical" representation of an explicit option tree.
